@@ -574,6 +574,8 @@ class Browscap {
         } else {
           throw new Browscap_Exception('Cannot open the local file');
         }
+      break;
+
       case self::UPDATE_FOPEN:
         $file = file_get_contents($url);
 
