@@ -174,6 +174,8 @@ class Browscap
 	 * if needed updated the definitions
 	 *
 	 * @param string $cache_dir
+	 *
+	 * @throws Browscap_Exception
 	 */
 	public function __construct($cache_dir)
 	{
@@ -463,8 +465,8 @@ class Browscap
 			$content .= preg_replace($pattern, '$1="$2"', $subject) . "\n";
 		}
 
-		if (!file_put_contents($path, $content)) {
-			throw new Browscap_Exception("Could not write .ini content to $path");
+		if (!@file_put_contents($path, $content)) {
+			throw new Browscap_Exception('Could not write .ini content to ' . $path);
 		}
 
 		return true;
@@ -482,7 +484,7 @@ class Browscap
 		$remote_tmstp = strtotime($remote_datetime);
 
 		if (!$remote_tmstp) {
-			throw new Browscap_Exception("Bad datetime format from {$this->remoteVerUrl}");
+			throw new Browscap_Exception('Bad datetime format from ' . $this->remoteVerUrl);
 		}
 
 		return $remote_tmstp;
@@ -497,7 +499,7 @@ class Browscap
 	private function _getLocalMTime()
 	{
 		if (!is_readable($this->localFile) || !is_file($this->localFile)) {
-			throw new Browscap_Exception("Local file is not readable");
+			throw new Browscap_Exception('Local file is not readable');
 		}
 
 		return filemtime($this->localFile);
@@ -648,7 +650,7 @@ class Browscap
 					return $file;
 				} // else try with the next possibility
 			case false:
-				throw new Browscap_Exception('Your server can\'t connect to external resources. Please update the file manually.');
+				throw new Browscap_Exception("Your server can't connect to external resources. Please update the file manually.");
 		}
 	}
 
@@ -676,5 +678,6 @@ class Browscap
  * @license   http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
  * @link      http://garetjax.info/projects/browscap/
  */
-class Browscap_Exception extends Exception { }
+class Browscap_Exception extends Exception
+{}
 
