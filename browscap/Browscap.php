@@ -795,6 +795,118 @@ class Browscap
 
 		return $ua;
 	}
+
+	public function getRemoteIniUrl() {
+		return $this->remoteIniUrl;
+	}
+
+	public function setRemoteIniUrl($remoteIniUrl) {
+		$this->remoteIniUrl = $remoteIniUrl;
+	}
+
+	public function getRemoteVerUrl() {
+		return $this->remoteVerUrl;
+	}
+
+	public function setRemoteVerUrl($remoteVerUrl) {
+		$this->remoteVerUrl = $remoteVerUrl;
+	}
+
+	public function getTimeout() {
+		return $this->timeout;
+	}
+
+	public function setTimeout($timeout) {
+		$this->timeout = $timeout;
+	}
+
+	public function getUpdateInterval() {
+		return $this->updateInterval;
+	}
+
+	public function setUpdateInterval($updateInterval) {
+		$this->updateInterval = $updateInterval;
+	}
+
+	public function getErrorInterval() {
+		return $this->errorInterval;
+	}
+
+	public function setErrorInterval($errorInterval) {
+		$this->errorInterval = $errorInterval;
+	}
+
+	public function getDoAutoUpdate() {
+		return $this->doAutoUpdate;
+	}
+
+	public function setDoAutoUpdate($doAutoUpdate) {
+		$this->doAutoUpdate = $doAutoUpdate;
+	}
+
+	public function getUpdateMethod() {
+		return $this->updateMethod;
+	}
+
+	public function setUpdateMethod($updateMethod) {
+		$this->updateMethod = $updateMethod;
+	}
+
+	public function getLocalFile() {
+		return $this->localFile;
+	}
+
+	public function setLocalFile($localFile) {
+		$this->localFile = $localFile;
+	}
+
+	public function getUserAgent() {
+		return $this->userAgent;
+	}
+
+	public function setUserAgent($userAgent) {
+		$this->userAgent = $userAgent;
+	}
+
+	public function getLowercase() {
+		return $this->lowercase;
+	}
+
+	public function setLowercase($lowercase) {
+		$this->lowercase = $lowercase;
+	}
+
+	public function getSilent() {
+		return $this->silent;
+	}
+
+	public function setSilent($silent) {
+		$this->silent = $silent;
+	}
+
+	public function getCacheFilename() {
+		return $this->cacheFilename;
+	}
+
+	public function setCacheFilename($cacheFilename) {
+		$this->cacheFilename = $cacheFilename;
+	}
+
+	public function getIniFilename() {
+		return $this->iniFilename;
+	}
+
+	public function setIniFilename($iniFilename) {
+		$this->iniFilename = $iniFilename;
+	}
+
+	public function getCacheDir() {
+		return $this->cacheDir;
+	}
+
+	public function setCacheDir($cacheDir) {
+		$this->cacheDir = $cacheDir;
+	}
 }
 
 /**
