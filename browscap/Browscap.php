@@ -235,7 +235,7 @@ class Browscap
 						// Adjust the filemtime to the $errorInterval
 						touch($ini_file, time() - $this->updateInterval + $this->errorInterval);
 					} else if ($this->silent) {
-						// Return an array if silent mode is active and the ini db doesn't exsist
+						// Return an array if silent mode is active and the ini db doesn't exist
 						return array();
 					}
 
@@ -586,7 +586,7 @@ class Browscap
 	private function _getRemoteData($url)
 	{
 		ini_set('user_agent', $this->_getUserAgent());
-		
+
 		switch ($this->_getUpdateMethod()) {
 			case self::UPDATE_LOCAL:
 				$file = file_get_contents($url);
@@ -604,7 +604,7 @@ class Browscap
 				if ($file !== false) {
 					return $file;
 				} // else try with the next possibility (break omitted)
-				
+
 			case self::UPDATE_FSOCKOPEN:
 				$remote_url     = parse_url($url);
 				$remote_handler = fsockopen($remote_url['host'], 80, $c, $e, $this->timeout);
@@ -643,7 +643,7 @@ class Browscap
 						return $file;
 					}
 				} // else try with the next possibility
-				
+
 			case self::UPDATE_CURL:
 				if (is_callable("curl_init")) {
 					$ch = curl_init($url);
