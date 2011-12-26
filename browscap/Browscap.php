@@ -302,41 +302,41 @@ class Browscap
 		// collect the browser data if 'smart/fast caching' hasn't delivered
 		if ($array === false)
 		{
-		$browser = array();
-		foreach ($this->_patterns as $key => $pattern) {
-			if (preg_match($pattern . 'i', $user_agent)) {
-				$browser = array(
-					$user_agent, // Original useragent
-					trim(strtolower($pattern), self::REGEX_DELIMITER),
-					$this->_userAgents[$key]
-				);
+			$browser = array();
+			foreach ($this->_patterns as $key => $pattern) {
+				if (preg_match($pattern . 'i', $user_agent)) {
+					$browser = array(
+						$user_agent, // Original useragent
+						trim(strtolower($pattern), self::REGEX_DELIMITER),
+						$this->_userAgents[$key]
+					);
 
-				$browser = $value = $browser + $this->_browsers[$key];
+					$browser = $value = $browser + $this->_browsers[$key];
 
-				while (array_key_exists(3, $value) && $value[3]) {
-					$value      =   $this->_browsers[$value[3]];
-					$browser    +=  $value;
+					while (array_key_exists(3, $value) && $value[3]) {
+						$value      =   $this->_browsers[$value[3]];
+						$browser    +=  $value;
+					}
+
+					if (!empty($browser[3])) {
+						$browser[3] = $this->_userAgents[$browser[3]];
+					}
+
+					break;
 				}
-
-				if (!empty($browser[3])) {
-					$browser[3] = $this->_userAgents[$browser[3]];
-				}
-
-				break;
-			}
-		}
-
-		// Add the keys for each property
-		$array = array();
-		foreach ($browser as $key => $value) {
-			if ($value === 'true') {
-				$value = true;
-			} else if ($value === 'false') {
-				$value = false;
 			}
 
-			$array[$this->_properties[$key]] = $value;
-		}
+			// Add the keys for each property
+			$array = array();
+			foreach ($browser as $key => $value) {
+				if ($value === 'true') {
+					$value = true;
+				} else if ($value === 'false') {
+					$value = false;
+				}
+
+				$array[$this->_properties[$key]] = $value;
+			}
 
 			// see if we should update the 'fast cache' as well
 			if ($ua_cache_file !== false)
