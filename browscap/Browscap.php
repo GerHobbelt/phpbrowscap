@@ -96,7 +96,7 @@ class Browscap
 	 *                  an UPDATE_* constant, null or false.
 	 */
 	public $remoteIniUrl    = 'http://browsers.garykeith.com/stream.asp?BrowsCapINI';
-	public $remoteVerUrl    = 'http://updates.browserproject.com/version-date.asp';
+	public $remoteVerUrl    = 'http://browsers.garykeith.com/versions/version-date.asp';
 	public $timeout         = 5;
 	public $updateInterval  = 432000; // 5 days
 	public $errorInterval   = 7200;   // 2 hours
@@ -583,7 +583,7 @@ class Browscap
 			$subject = trim($subject);
 			$content .= preg_replace($pattern, '$1="$2"', $subject) . "\n";
 		}
-		
+
 		if ($url != $path) {
 			if (!file_put_contents($path, $content)) {
 				throw new Browscap_Exception("Could not write .ini content to $path");
