@@ -146,8 +146,13 @@ class Browscap
 	 * or only 'ubiquitous' UAs get their info cached in fast-access, small, cache files.
 	 *
 	 * @var int
+	 *
+	 * Values:
+	 *   0: DO NOT USE the 'smart cache' AT ALL.
+	 *   1: Store any and all incoming UAs' output in the smart cache. Security risk: UA smart cache directory flooding (when visitors use random UA strings).
+	 *   2 (and above): Only store known UAs' output in the smart cache. Prevents UA smart cache directory flooding security risk.
 	 */
-	public $smart_cache     = 1;
+	public $smart_cache     = 2;
 
 	/**
 	 * Where to store the cached PHP arrays.
@@ -345,7 +350,11 @@ class Browscap
 			}
 
 			// see if we should update the 'fast cache' as well
-			if ($ua_cache_file !== false)
+			if ($ua_cache_file !== false
+				&& ($this->smart_cache == 1 /* store each UA, even the unknown ones, in the 'smart cache'. Security risk: UA cache flooding. */
+					|| count($array) > 0 /* store only _known_ UAs in the 'smart cache'. Prevents UA cache flooding by evil visitors with random UA headers. */
+					)
+				)
 			{
 				@mkdir($this->cacheDir . $ua_cache_subdir, 0775, true);
 
