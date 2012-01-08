@@ -359,7 +359,7 @@ class Browscap
 				@mkdir($this->cacheDir . $ua_cache_subdir, 0775, true);
 
 				$data = serialize($array);
-				if (false === file_put_contents($ua_cache_file, $data))
+				if (false === @file_put_contents($ua_cache_file, $data))
 				{
 					$this->_destroy_UA_cachefiles($ua_cache_subdir, $ua_cache_filename);
 				}
@@ -452,7 +452,7 @@ class Browscap
 		$cache = $this->_buildCache();
 
 		// Save and return
-		return (bool) file_put_contents($cache_path, $cache, LOCK_EX);
+		return (bool) @file_put_contents($cache_path, $cache, LOCK_EX);
 	}
 
 	/**
@@ -594,8 +594,8 @@ class Browscap
 		}
 
 		if ($url != $path) {
-			if (!file_put_contents($path, $content)) {
-				throw new Browscap_Exception("Could not write .ini content to $path");
+			if (!@file_put_contents($path, $content)) {
+				throw new Browscap_Exception('Could not write .ini content to ' . $path);
 			}
 		}
 		return true;
