@@ -98,11 +98,11 @@ class Browscap
 	 *                an UPDATE_* constant, null or false.
 	 */
 	public $remoteIniUrl = 'http://tempdownloads.browserscap.com/stream.asp?BrowsCapINI';
-	public $remoteVerUrl = 'http://tempdownloads.browserscap.com/versions/version-date.asp';
+	public $remoteVerUrl = 'http://tempdownloads.browserscap.com/versions/version-date.php';
 	public $timeout = 5;
 	public $updateInterval = 432000;  // 5 days
 	public $errorInterval = 7200;  // 2 hours
-	public $doAutoUpdate = false;
+	public $doAutoUpdate = true;
 	public $updateMethod = null;
 
 	/**
