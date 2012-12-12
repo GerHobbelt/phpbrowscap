@@ -182,6 +182,7 @@ class Browscap
 	 * if needed updated the definitions
 	 *
 	 * @param string $cache_dir
+	 * @throws Exception
 	 */
 	public function __construct($cache_dir)
 	{
@@ -220,7 +221,7 @@ class Browscap
 	 * @param string $user_agent  the user agent string
 	 * @param bool $return_array  whether return an array or an object
 	 * @throws Browscap_Exception
-	 * @return stdObject  the object containing the browsers details. Array if
+	 * @return stdClass|array the object containing the browsers details. Array if
 	 *                    $return_array is set to true.
 	 */
 	public function getBrowser($user_agent = null, $return_array = false)
@@ -367,6 +368,7 @@ class Browscap
 				$browsers[$user_agent]['Parent'] = $user_agents_keys[$parent];
 			}
 
+			$browser = array();
 			foreach ($browsers[$user_agent] as $key => $value) {
 				$key = $properties_keys[$key] . ".0";
 				$browser[$key] = $value;
@@ -392,6 +394,7 @@ class Browscap
 	/**
 	 * Loads the cache into object's properties
 	 *
+	 * @param $cache_file
 	 * @return void
 	 */
 	protected function _loadCache($cache_file)
