@@ -47,66 +47,66 @@ class Browscap
     /**
      * Different ways to access remote and local files.
      *
-     * UPDATE_FOPEN: Uses the fopen url wrapper (use file_get_contents).
+     * UPDATE_FOPEN:     Uses the fopen url wrapper (use file_get_contents).
      * UPDATE_FSOCKOPEN: Uses the socket functions (fsockopen).
-     * UPDATE_CURL: Uses the cURL extension.
-     * UPDATE_LOCAL: Updates from a local file (file_get_contents).
+     * UPDATE_CURL:      Uses the cURL extension.
+     * UPDATE_LOCAL:     Updates from a local file (file_get_contents).
      */
-    const UPDATE_FOPEN = 'URL-wrapper';
-    const UPDATE_FSOCKOPEN = 'socket';
-    const UPDATE_CURL = 'cURL';
-    const UPDATE_LOCAL = 'local';
+    const UPDATE_FOPEN      = 'URL-wrapper';
+    const UPDATE_FSOCKOPEN  = 'socket';
+    const UPDATE_CURL       = 'cURL';
+    const UPDATE_LOCAL      = 'local';
 
     /**
      * Options for regex patterns.
      *
-     * REGEX_DELIMITER: Delimiter of all the regex patterns in the whole class.
-     * REGEX_MODIFIERS: Regex modifiers.
+     * REGEX_DELIMITER:  Delimiter of all the regex patterns in the whole class.
+     * REGEX_MODIFIERS:  Regex modifiers.
      */
-    const REGEX_DELIMITER = '@';
-    const REGEX_MODIFIERS = 'i';
+    const REGEX_DELIMITER   = '@';
+    const REGEX_MODIFIERS   = 'i';
 
     /**
      * The values to quote in the ini file
      */
-    const VALUES_TO_QUOTE = 'Browser|Parent';
+    const VALUES_TO_QUOTE   = 'Browser|Parent';
 
     /**
      * Definitions of the function used by the uasort() function to order the
      * userAgents array.
      *
-     * ORDER_FUNC_ARGS: Arguments that the function will take.
+     * ORDER_FUNC_ARGS:  Arguments that the function will take.
      * ORDER_FUNC_LOGIC: Internal logic of the function.
      */
-    const ORDER_FUNC_ARGS = '$a, $b';
-    const ORDER_FUNC_LOGIC = '$a=strlen($a);$b=strlen($b);return$a==$b?0:($a<$b?1:-1);';
+    const ORDER_FUNC_ARGS   = '$a, $b';
+    const ORDER_FUNC_LOGIC  = '$a=strlen($a);$b=strlen($b);return$a==$b?0:($a<$b?1:-1);';
 
     /**
      * The headers to be sent for checking the version and requesting the file.
      */
-    const REQUEST_HEADERS = "GET %s HTTP/1.0\r\nHost: %s\r\nUser-Agent: %s\r\nConnection: Close\r\n\r\n";
+    const REQUEST_HEADERS   = "GET %s HTTP/1.0\r\nHost: %s\r\nUser-Agent: %s\r\nConnection: Close\r\n\r\n";
 
     /**
      * Options for auto update capabilities
      *
-     * $remoteVerUrl: The location to use to check out if a new version of the
-     *                browscap.ini file is available.
-     * $remoteIniUrl: The location from which download the ini file.
-     *                The placeholder for the file should be represented by a %s.
-     * $timeout: The timeout for the requests.
+     * $remoteVerUrl:   The location to use to check out if a new version of the
+     *                  browscap.ini file is available.
+     * $remoteIniUrl:   The location from which download the ini file.
+     *                  The placeholder for the file should be represented by a %s.
+     * $timeout:        The timeout for the requests.
      * $updateInterval: The update interval in seconds.
-     * $errorInterval: The next update interval in seconds in case of an error.
-     * $doAutoUpdate: Flag to disable the automatic interval based update.
-     * $updateMethod: The method to use to update the file, has to be a value of
-     *                an UPDATE_* constant, null or false.
+     * $errorInterval:  The next update interval in seconds in case of an error.
+     * $doAutoUpdate:   Flag to disable the automatic interval based update.
+     * $updateMethod:   The method to use to update the file, has to be a value of
+     *                  an UPDATE_* constant, null or false.
      */
     public $remoteIniUrl = 'http://browsers.garykeith.com/stream.asp?BrowsCapINI';
     public $remoteVerUrl = 'http://browsers.garykeith.com/versions/version-date.asp';
-    public $timeout = 5;
-    public $updateInterval = 432000;  // 5 days
-    public $errorInterval = 7200;  // 2 hours
-    public $doAutoUpdate = true;
-    public $updateMethod = null;
+    public $timeout         = 5;
+    public $updateInterval  = 432000; // 5 days
+    public $errorInterval   = 7200;   // 2 hours
+    public $doAutoUpdate    = true;
+    public $updateMethod    = null;
 
     /**
      * The path of the local version of the browscap.ini file from which to
@@ -114,7 +114,7 @@ class Browscap
      *
      * @var string
      */
-    public $localFile = null;
+    public $localFile       = null;
 
     /**
      * The useragent to include in the requests made by the class during the
@@ -122,7 +122,7 @@ class Browscap
      *
      * @var string
      */
-    public $userAgent = 'Browser Capabilities Project - PHP Browscap/%v %m';
+    public $userAgent       = 'Browser Capabilities Project - PHP Browscap/%v %m';
 
     /**
      * Flag to enable only lowercase indexes in the result.
@@ -130,7 +130,7 @@ class Browscap
      *
      * @var bool
      */
-    public $lowercase = false;
+    public $lowercase       = false;
 
     /**
      * Flag to enable/disable silent error management.
@@ -140,28 +140,45 @@ class Browscap
      *
      * @var bool
      */
-    public $silent = false;
+    public $silent          = false;
+
+    /**
+     * Flag to enable/disable individual (very high-speed) UA caching.
+     * When > 0, the settings fo each UA will be cached individually, reducing memory
+     * consumption and loading time of the 'overall' cache file. Generally, a site is
+     * visited by a large number of people using few browsers, and the total number of
+     * different UAs visiting is quite manageable. Here we can set up whether any, all
+     * or only 'ubiquitous' UAs get their info cached in fast-access, small, cache files.
+     *
+     * @var int
+     *
+     * Values:
+     *   0: DO NOT USE the 'smart cache' AT ALL.
+     *   1: Store any and all incoming UAs' output in the smart cache. Security risk: UA smart cache directory flooding (when visitors use random UA strings).
+     *   2 (and above): Only store known UAs' output in the smart cache. Prevents UA smart cache directory flooding security risk.
+     */
+    public $smart_cache     = 2;
 
     /**
      * Where to store the cached PHP arrays.
      *
      * @var string
      */
-    public $cacheFilename = 'cache.php';
+    public $cacheFilename   = 'cache.php';
 
     /**
      * Where to store the downloaded ini file.
      *
      * @var string
      */
-    public $iniFilename = 'browscap.ini';
+    public $iniFilename     = 'browscap.ini';
 
     /**
      * Path to the cache directory
      *
      * @var string
      */
-    public $cacheDir = null;
+    public $cacheDir        = null;
 
     /**
      * Flag to be set to true after loading the cache
@@ -176,8 +193,8 @@ class Browscap
      * @var array
      */
     protected $_userAgents = array();
-    protected $_browsers = array();
-    protected $_patterns = array();
+    protected $_browsers   = array();
+    protected $_patterns   = array();
     protected $_properties = array();
 
     /**
@@ -207,6 +224,8 @@ class Browscap
      * if needed updated the definitions
      *
      * @param string $cache_dir
+     *
+     * @throws Browscap_Exception
      */
     public function __construct($cache_dir)
     {
@@ -214,7 +233,7 @@ class Browscap
         date_default_timezone_set(date_default_timezone_get());
 
         if (!isset($cache_dir)) {
-            throw new Exception(
+            throw new Browscap_Exception(
                 'You have to provide a path to read/store the browscap cache file'
             );
         }
@@ -223,7 +242,7 @@ class Browscap
         $cache_dir = realpath($cache_dir);
 
         if (false === $cache_dir) {
-            throw new Exception(
+            throw new Browscap_Exception(
                 sprintf('The cache path %s is invalid. Are you sure that it exists and that you have permission to access it?', $old_cache_dir)
             );
         }
@@ -242,15 +261,56 @@ class Browscap
     /**
      * Gets the information about the browser by User Agent
      *
-     * @param string $user_agent  the user agent string
-     * @param bool $return_array  whether return an array or an object
-     * @throws Exception
-     * @return stdObject  the object containing the browsers details. Array if
+     * @param string $user_agent    the user agent string
+     * @param bool   $return_array  whether return an array or an object
+     *
+     * @throws Browscap_Exception
+     *
+     * @return stdClass|array the object containing the browsers details. Array if
      *                    $return_array is set to true.
      */
     public function getBrowser($user_agent = null, $return_array = false)
     {
-        // Load the cache at the first request
+        // Automatically detect the useragent
+        if (!isset($user_agent)) {
+            if (isset($_SERVER['HTTP_USER_AGENT'])) {
+                $user_agent = $_SERVER['HTTP_USER_AGENT'];
+            } else {
+                $user_agent = '';
+            }
+        }
+
+        // see if we might have a fast/tiny cache entry for this one:
+        $array = false;
+        if ($this->smart_cache > 0)
+        {
+            $ua_hash = md5($user_agent);
+            // make sure we do not load the cache directory to subpar performance: cache the UAs in a subdir tree (1 level depth):
+            $ua_cache_subdir = 'UAC/' . substr($ua_hash, 0, 2);
+            // file subpath length: 64 chars
+            $ua_cache_filename = substr(preg_replace('/[^A-Za-z0-9.-]+/', '_', $user_agent), 0, 27) . '.' . substr($ua_hash, 2);
+
+            $ua_cache_file = $this->cacheDir . $ua_cache_subdir . '/' . $ua_cache_filename;
+            if (file_exists($ua_cache_file))
+            {
+                $data = file_get_contents($ua_cache_file);
+                if ($data !== false)
+                {
+                    $data = @unserialize($data);
+                }
+                // when the file is damaged, nuke it so it can be recreated properly:
+                if (!is_array($data))
+                {
+                    $this->_destroy_UA_cachefiles($ua_cache_subdir, $ua_cache_filename);
+                }
+                else
+                {
+                    $array = $data;
+                }
+            }
+        }
+
+        // Load the cache at the first request, when necessary
         if (!$this->_cacheLoaded) {
             $cache_file = $this->cacheDir . $this->cacheFilename;
             $ini_file = $this->cacheDir . $this->iniFilename;
@@ -266,12 +326,12 @@ class Browscap
             if (!file_exists($cache_file) || !file_exists($ini_file) || ($interval > $this->updateInterval)) {
                 try {
                     $this->updateCache();
-                } catch (Exception $e) {
+                } catch (Browscap_Exception $e) {
                     if (file_exists($ini_file)) {
                         // Adjust the filemtime to the $errorInterval
                         touch($ini_file, time() - $this->updateInterval + $this->errorInterval);
-                    } elseif ($this->silent) {
-                        // Return an array if silent mode is active and the ini db doesn't exsist
+                    } else if ($this->silent) {
+                        // Return an array if silent mode is active and the ini db doesn't exist
                         return array();
                     }
 
@@ -284,48 +344,60 @@ class Browscap
             $this->_loadCache($cache_file);
         }
 
-        // Automatically detect the useragent
-        if (!isset($user_agent)) {
-            if (isset($_SERVER['HTTP_USER_AGENT'])) {
-                $user_agent = $_SERVER['HTTP_USER_AGENT'];
-            } else {
-                $user_agent = '';
+        // collect the browser data if 'smart/fast caching' hasn't delivered
+        if ($array === false)
+        {
+            $browser = array();
+            foreach ($this->_patterns as $key => $pattern) {
+                if (preg_match($pattern . 'i', $user_agent)) {
+                    $browser = array(
+                        $user_agent, // Original useragent
+                        trim(strtolower($pattern), self::REGEX_DELIMITER),
+                        $this->_userAgents[$key]
+                    );
+
+                    $browser = $value = $browser + $this->_browsers[$key];
+
+                    while (array_key_exists(3, $value) && $value[3]) {
+                        $value      =   $this->_browsers[$value[3]];
+                        $browser    +=  $value;
+                    }
+
+                    if (!empty($browser[3])) {
+                        $browser[3] = $this->_userAgents[$browser[3]];
+                    }
+
+                    break;
+                }
             }
-        }
 
-        $browser = array();
-        foreach ($this->_patterns as $key => $pattern) {
-            if (preg_match($pattern . 'i', $user_agent)) {
-                $browser = array(
-                    $user_agent, // Original useragent
-                    trim(strtolower($pattern), self::REGEX_DELIMITER),
-                    $this->_userAgents[$key]
-                );
-
-                $browser = $value = $browser + $this->_browsers[$key];
-
-                while (array_key_exists(3, $value) && $value[3]) {
-                    $value = $this->_browsers[$value[3]];
-                    $browser += $value;
+            // Add the keys for each property
+            $array = array();
+            foreach ($browser as $key => $value) {
+                if ($value === 'true') {
+                    $value = true;
+                } else if ($value === 'false') {
+                    $value = false;
                 }
 
-                if (!empty($browser[3])) {
-                    $browser[3] = $this->_userAgents[$browser[3]];
+                $array[$this->_properties[$key]] = $value;
+            }
+
+            // see if we should update the 'fast cache' as well
+            if ($ua_cache_file !== false
+                && ($this->smart_cache == 1 /* store each UA, even the unknown ones, in the 'smart cache'. Security risk: UA cache flooding. */
+                    || count($array) > 0 /* store only _known_ UAs in the 'smart cache'. Prevents UA cache flooding by evil visitors with random UA headers. */
+                    )
+                )
+            {
+                @mkdir($this->cacheDir . $ua_cache_subdir, 0775, true);
+
+                $data = serialize($array);
+                if (false === @file_put_contents($ua_cache_file, $data))
+                {
+                    $this->_destroy_UA_cachefiles($ua_cache_subdir, $ua_cache_filename);
                 }
-
-                break;
             }
-        }
-
-        // Add the keys for each property
-        $array = array();
-        foreach ($browser as $key => $value) {
-            if ($value === 'true') {
-                $value = true;
-            } elseif ($value === 'false') {
-                $value = false;
-            }
-            $array[$this->_properties[$key]] = $value;
         }
 
         return $return_array ? $array : (object) $array;
@@ -493,6 +565,7 @@ class Browscap
                 $browsers[$user_agent]['Parent'] = $user_agents_keys[$parent];
             }
 
+            $browser = array();
             foreach ($browsers[$user_agent] as $key => $value) {
                 $key = $properties_keys[$key] . ".0";
                 $browser[$key] = $value;
@@ -512,12 +585,61 @@ class Browscap
         $cache = $this->_buildCache();
 
         // Save and return
-        return (bool) file_put_contents($cache_path, $cache, LOCK_EX);
+        return (bool) @file_put_contents($cache_path, $cache, LOCK_EX);
+    }
+
+    /**
+     * Destroys one or all 'smart cache' files
+     */
+    private function _destroy_UA_cachefiles($subdir = null, $filename = null)
+    {
+        if (!empty($filename))
+        {
+            @unlink($this->cacheDir . $subdir . '/' . $filename);
+
+            // as we use a 1 level subdir tree, see if we can/should delete the related subdir as well:
+            @rmdir($this->cacheDir . $subdir);
+        }
+        else
+        {
+            // we KNOW we're caching files in a 'UAC/xx/' subdirectory tree; blow away those 'xx' subdirs and the 'UAC' base dir as well
+            $parent = dirname($this->cacheDir . 'UAC');
+            $dh = opendir($parent);
+            while ($fn = readdir($dh))
+            {
+                if ($fn == '.' || $fn == '..')
+                    continue;
+
+                $path = $this->cacheDir . 'UAC/' . $fn;
+
+                if (is_dir($path))
+                {
+                    $sdh = opendir($path);
+                    while ($sfn = readdir($sdh))
+                    {
+                        if ($sfn == '.' || $sfn == '..')
+                            continue;
+
+                        $spath = $path . '/' . $sfn;
+                        @unlink($spath);
+                    }
+                    closedir($sdh);
+                    @rmdir($path);
+                }
+                else
+                {
+                    @unlink($path);
+                }
+            }
+            closedir($dh);
+            @rmdir($this->cacheDir . 'UAC');
+        }
     }
 
     /**
      * Loads the cache into object's properties
      *
+     * @param $cache_file
      * @return void
      */
     protected function _loadCache($cache_file)
@@ -575,7 +697,9 @@ class Browscap
      *
      * @param string $url  the url of the remote server
      * @param string $path  the path of the ini file to update
-     * @throws Exception
+     *
+     * @throws Browscap_Exception
+     *
      * @return bool if the ini file was updated
      */
     protected function _getRemoteIniFile($url, $path)
@@ -593,7 +717,6 @@ class Browscap
             if ($remote_tmstp < $local_tmstp) {
                 // No update needed, return
                 touch($path);
-
                 return false;
             }
         }
@@ -619,18 +742,18 @@ class Browscap
         }
 
         if ($url != $path) {
-            if (!file_put_contents($path, $content)) {
-                throw new Exception("Could not write .ini content to $path");
+            if (!@file_put_contents($path, $content)) {
+                throw new Browscap_Exception('Could not write .ini content to ' . $path);
             }
         }
-
         return true;
     }
 
     /**
      * Gets the remote ini file update timestamp
      *
-     * @throws Exception
+     * @throws Browscap_Exception
+     *
      * @return int the remote modification timestamp
      */
     protected function _getRemoteMTime()
@@ -639,7 +762,7 @@ class Browscap
         $remote_tmstp = strtotime($remote_datetime);
 
         if (!$remote_tmstp) {
-            throw new Exception("Bad datetime format from {$this->remoteVerUrl}");
+            throw new Browscap_Exception('Bad datetime format from ' . $this->remoteVerUrl);
         }
 
         return $remote_tmstp;
@@ -648,13 +771,14 @@ class Browscap
     /**
      * Gets the local ini file update timestamp
      *
-     * @throws Exception
+     * @throws Browscap_Exception
+     *
      * @return int the local modification timestamp
      */
     protected function _getLocalMTime()
     {
         if (!is_readable($this->localFile) || !is_file($this->localFile)) {
-            throw new Exception("Local file is not readable");
+            throw new Browscap_Exception('Local file is not readable');
         }
 
         return filemtime($this->localFile);
@@ -667,6 +791,7 @@ class Browscap
      * convert strings to numbers.
      *
      * @param array $array the array to parse and convert
+     *
      * @return string the array parsed into a PHP string
      */
     protected function _array2string($array)
@@ -676,7 +801,7 @@ class Browscap
         foreach ($array as $key => $value) {
             if (is_int($key)) {
                 $key = '';
-            } elseif (ctype_digit((string) $key) || strpos($key, '.0')) {
+            } else if (ctype_digit((string) $key) || strpos($key, '.0')) {
                 $key = intval($key) . '=>' ;
             } else {
                 $key = "'" . str_replace("'", "\'", $key) . "'=>" ;
@@ -684,7 +809,7 @@ class Browscap
 
             if (is_array($value)) {
                 $value = $this->_array2string($value);
-            } elseif (ctype_digit((string) $value)) {
+            } else if (ctype_digit((string) $value)) {
                 $value = intval($value);
             } else {
                 $value = "'" . str_replace("'", "\'", $value) . "'";
@@ -708,11 +833,11 @@ class Browscap
         if ($this->updateMethod === null) {
             if ($this->localFile !== null) {
                 $this->updateMethod = self::UPDATE_LOCAL;
-            } elseif (ini_get('allow_url_fopen') && function_exists('file_get_contents')) {
+            } else if (ini_get('allow_url_fopen') && function_exists('file_get_contents')) {
                 $this->updateMethod = self::UPDATE_FOPEN;
-            } elseif (function_exists('fsockopen')) {
+            } else if (function_exists('fsockopen')) {
                 $this->updateMethod = self::UPDATE_FSOCKOPEN;
-            } elseif (extension_loaded('curl')) {
+            } else if (extension_loaded('curl')) {
                 $this->updateMethod = self::UPDATE_CURL;
             } else {
                 $this->updateMethod = false;
@@ -726,7 +851,9 @@ class Browscap
      * Retrieve the data identified by the URL
      *
      * @param string $url the url of the data
-     * @throws Exception
+     *
+     * @throws Browscap_Exception
+     *
      * @return string the retrieved data
      */
     protected function _getRemoteData($url)
@@ -740,8 +867,10 @@ class Browscap
                 if ($file !== false) {
                     return $file;
                 } else {
-                    throw new Exception('Cannot open the local file');
+                    throw new Browscap_Exception('Cannot open the local file');
                 }
+                break;
+
             case self::UPDATE_FOPEN:
                 // include proxy settings in the file_get_contents() call
                 $context = $this->_getStreamContext();
@@ -750,6 +879,7 @@ class Browscap
                 if ($file !== false) {
                     return $file;
                 } // else try with the next possibility (break omitted)
+
             case self::UPDATE_FSOCKOPEN:
                 $remote_url = parse_url($url);
                 $remote_handler = fsockopen($remote_url['host'], 80, $c, $e, $this->timeout);
@@ -788,22 +918,26 @@ class Browscap
                         return $file;
                     }
                 } // else try with the next possibility
+
             case self::UPDATE_CURL:
-                $ch = curl_init($url);
+                if (is_callable("curl_init")) {
+                    $ch = curl_init($url);
 
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
-                curl_setopt($ch, CURLOPT_USERAGENT, $this->_getUserAgent());
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->timeout);
+                    curl_setopt($ch, CURLOPT_USERAGENT, $this->_getUserAgent());
 
-                $file = curl_exec($ch);
+                    $file = curl_exec($ch);
 
-                curl_close($ch);
+                    curl_close($ch);
+                }
 
                 if ($file !== false) {
                     return $file;
                 } // else try with the next possibility
+
             case false:
-                throw new Exception('Your server can\'t connect to external resources. Please update the file manually.');
+                throw new Browscap_Exception("Your server can't connect to external resources. Please update the file manually.");
         }
     }
 
@@ -820,6 +954,118 @@ class Browscap
 
         return $ua;
     }
+
+    public function getRemoteIniUrl() {
+        return $this->remoteIniUrl;
+    }
+
+    public function setRemoteIniUrl($remoteIniUrl) {
+        $this->remoteIniUrl = $remoteIniUrl;
+    }
+
+    public function getRemoteVerUrl() {
+        return $this->remoteVerUrl;
+    }
+
+    public function setRemoteVerUrl($remoteVerUrl) {
+        $this->remoteVerUrl = $remoteVerUrl;
+    }
+
+    public function getTimeout() {
+        return $this->timeout;
+    }
+
+    public function setTimeout($timeout) {
+        $this->timeout = $timeout;
+    }
+
+    public function getUpdateInterval() {
+        return $this->updateInterval;
+    }
+
+    public function setUpdateInterval($updateInterval) {
+        $this->updateInterval = $updateInterval;
+    }
+
+    public function getErrorInterval() {
+        return $this->errorInterval;
+    }
+
+    public function setErrorInterval($errorInterval) {
+        $this->errorInterval = $errorInterval;
+    }
+
+    public function getDoAutoUpdate() {
+        return $this->doAutoUpdate;
+    }
+
+    public function setDoAutoUpdate($doAutoUpdate) {
+        $this->doAutoUpdate = $doAutoUpdate;
+    }
+
+    public function getUpdateMethod() {
+        return $this->updateMethod;
+    }
+
+    public function setUpdateMethod($updateMethod) {
+        $this->updateMethod = $updateMethod;
+    }
+
+    public function getLocalFile() {
+        return $this->localFile;
+    }
+
+    public function setLocalFile($localFile) {
+        $this->localFile = $localFile;
+    }
+
+    public function getUserAgent() {
+        return $this->userAgent;
+    }
+
+    public function setUserAgent($userAgent) {
+        $this->userAgent = $userAgent;
+    }
+
+    public function getLowercase() {
+        return $this->lowercase;
+    }
+
+    public function setLowercase($lowercase) {
+        $this->lowercase = $lowercase;
+    }
+
+    public function getSilent() {
+        return $this->silent;
+    }
+
+    public function setSilent($silent) {
+        $this->silent = $silent;
+    }
+
+    public function getCacheFilename() {
+        return $this->cacheFilename;
+    }
+
+    public function setCacheFilename($cacheFilename) {
+        $this->cacheFilename = $cacheFilename;
+    }
+
+    public function getIniFilename() {
+        return $this->iniFilename;
+    }
+
+    public function setIniFilename($iniFilename) {
+        $this->iniFilename = $iniFilename;
+    }
+
+    public function getCacheDir() {
+        return $this->cacheDir;
+    }
+
+    public function setCacheDir($cacheDir) {
+        $this->cacheDir = $cacheDir;
+    }
 }
 
 /**
@@ -830,6 +1076,8 @@ class Browscap
  * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
  * @version    1.0
  * @license    http://www.opensource.org/licenses/MIT MIT License
- * @link       https://github.com/GaretJax/phpbrowscap/*/
-class Exception extends BaseException
+ * @link       https://github.com/GaretJax/phpbrowscap/
+ */
+class Browscap_Exception extends \Exception
 {}
+
