@@ -472,7 +472,7 @@ class Browscap
     {
         $wrappers = isset($wrapper) ? array($wrapper) : array_keys($this->_streamContextOptions);
 
-        $affectedProtocols = array();
+        $clearedWrappers = array();
         $options = array('proxy', 'request_fulluri', 'header');
         foreach ($wrappers as $wrapper) {
 
@@ -680,6 +680,7 @@ class Browscap
     /**
      * Lazy getter for the stream context resource.
      *
+     * @param bool $recreate
      * @return resource
      */
     protected function _getStreamContext($recreate = false)
