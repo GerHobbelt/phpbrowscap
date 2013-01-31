@@ -1,5 +1,7 @@
 <?php
 
+namespace phpbrowscap;
+
 /**
  * Browscap.ini parsing class with caching and update capabilities
  *
@@ -95,8 +97,8 @@ class Browscap
 	 * $updateMethod:   The method to use to update the file, has to be a value of
 	 *                  an UPDATE_* constant, null or false.
 	 */
-	public $remoteIniUrl    = 'http://browsers.garykeith.com/stream.asp?BrowsCapINI';
-	public $remoteVerUrl    = 'http://browsers.garykeith.com/versions/version-date.asp';
+	public $remoteIniUrl = 'http://tempdownloads.browserscap.com/stream.asp?BrowsCapINI';
+	public $remoteVerUrl = 'http://tempdownloads.browserscap.com/versions/version-date.php';
 	public $timeout         = 5;
 	public $updateInterval  = 432000; // 5 days
 	public $errorInterval   = 7200;   // 2 hours
@@ -239,7 +241,7 @@ class Browscap
 	 *
 	 * @throws Browscap_Exception
 	 *
-	 * @return stdObject  the object containing the browsers details. Array if
+	 * @return stdClass|array the object containing the browsers details. Array if
 	 *                    $return_array is set to true.
 	 */
 	public function getBrowser($user_agent = null, $return_array = false)
@@ -440,6 +442,7 @@ class Browscap
 				$browsers[$user_agent]['Parent'] = $user_agents_keys[$parent];
 			}
 
+			$browser = array();
 			foreach ($browsers[$user_agent] as $key => $value) {
 				$key = $properties_keys[$key] . ".0";
 				$browser[$key] = $value;
@@ -513,6 +516,7 @@ class Browscap
 	/**
 	 * Loads the cache into object's properties
 	 *
+	 * @param $cache_file
 	 * @return void
 	 */
 	protected function _loadCache($cache_file)
@@ -935,6 +939,6 @@ class Browscap
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/GaretJax/phpbrowscap/
  */
-class Browscap_Exception extends Exception
+class Browscap_Exception extends \Exception
 {}
 

@@ -3,6 +3,7 @@ Browser Capabilities PHP Project
 
 _Hacking around with PHP to have a better solution than `get_browser()`_
 
+[![Build Status](https://secure.travis-ci.org/GaretJax/phpbrowscap.png?branch=master)](http://travis-ci.org/GaretJax/phpbrowscap)
 
 Introduction
 ------------
@@ -22,10 +23,12 @@ Since in most shared hosting environments you have not access to the php.ini
 file, the browscap directive cannot be modified and you are stuck with either
 and outdated database or without browscap support at all.
 
-Browscap is a standalone class for PHP5 that gets around the limitations of
+Browscap is a standalone class for PHP >=5.3 that gets around the limitations of
 `get_browser()` and manages the whole thing.
 It offers methods to update, cache, adapt and get details about every supplied
 user agent on a standalone basis.
+
+Browscap is a [Composer](http://packagist.org/about-composer) package.
 
 
 Quick start
@@ -53,7 +56,7 @@ Here is a non-exaustive feature list of the Browscap class:
  * Auto updated browscap.ini file and cache from remote server with version checking
  * Configurable remote update server
  * Fully configurable (since 0.2)
- * <del>PHP4 and</del> PHP5 compatible (PHP4 version deprecated)
+ * <del>PHP4 and</del> PHP >=5.3 compatible (PHP <5.3 version deprecated)
  * Released under the MIT License
 
 
@@ -64,6 +67,6 @@ Please report your issues and ask for new features on the GitHub Issue Tracker
 at https://github.com/GaretJax/phpbrowscap/issues
 
 Please note that the browscap class only parses and queries the browscap.ini
-database provided by Gary Keith. If a browser if wrongly identified or a results
+database provided by Gary Keith. If a browser is wrongly identified or a results
 presents erroneous properties, please refer directly to the browscap project
 homepage at: http://browsers.garykeith.com/
