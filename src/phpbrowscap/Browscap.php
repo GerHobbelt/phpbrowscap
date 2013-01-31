@@ -735,50 +735,55 @@ class Browscap
                 break;
 
             case self::UPDATE_FOPEN:
-                $file = file_get_contents($url);
+                if (ini_get('allow_url_fopen') && is_callable('file_get_contents')) {
+                    $context = $this->_getStreamContext();
+                    $file = file_get_contents($url, false, $context);
 
-                if ($file !== false) {
-                    return $file;
-                } // else try with the next possibility (break omitted)
+                    if ($file !== false) {
+                        return $file;
+                    } // else try with the next possibility (break omitted)
+                }
 
             case self::UPDATE_FSOCKOPEN:
-                $remote_url = parse_url($url);
-                $remote_handler = fsockopen($remote_url['host'], 80, $c, $e, $this->timeout);
+                if (is_callable('fsockopen')) {
+                    $remote_url = parse_url($url);
+                    $remote_handler = fsockopen($remote_url['host'], 80, $c, $e, $this->timeout);
 
-                if ($remote_handler) {
-                    stream_set_timeout($remote_handler, $this->timeout);
+                    if ($remote_handler) {
+                        stream_set_timeout($remote_handler, $this->timeout);
 
-                    if (isset($remote_url['query'])) {
-                        $remote_url['path'] .= '?' . $remote_url['query'];
-                    }
-
-                    $out = sprintf(
-                        self::REQUEST_HEADERS,
-                        $remote_url['path'],
-                        $remote_url['host'],
-                        $this->_getUserAgent()
-                    );
-
-                    fwrite($remote_handler, $out);
-
-                    $response = fgets($remote_handler);
-                    if (strpos($response, '200 OK') !== false) {
-                        $file = '';
-                        while (!feof($remote_handler)) {
-                            $file .= fgets($remote_handler);
+                        if (isset($remote_url['query'])) {
+                            $remote_url['path'] .= '?' . $remote_url['query'];
                         }
 
-                        $file = str_replace("\r\n", "\n", $file);
-                        $file = explode("\n\n", $file);
-                        array_shift($file);
+                        $out = sprintf(
+                            self::REQUEST_HEADERS,
+                            $remote_url['path'],
+                            $remote_url['host'],
+                            $this->_getUserAgent()
+                        );
 
-                        $file = implode("\n\n", $file);
+                        fwrite($remote_handler, $out);
 
-                        fclose($remote_handler);
+                        $response = fgets($remote_handler);
+                        if (strpos($response, '200 OK') !== false) {
+                            $file = '';
+                            while (!feof($remote_handler)) {
+                                $file .= fgets($remote_handler);
+                            }
 
-                        return $file;
-                    }
-                } // else try with the next possibility
+                            $file = str_replace("\r\n", "\n", $file);
+                            $file = explode("\n\n", $file);
+                            array_shift($file);
+
+                            $file = implode("\n\n", $file);
+
+                            fclose($remote_handler);
+
+                            return $file;
+                        }
+                    } // else try with the next possibility
+                }
 
             case self::UPDATE_CURL:
                 if (is_callable("curl_init")) {
