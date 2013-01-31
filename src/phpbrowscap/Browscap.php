@@ -511,6 +511,9 @@ class Browscap
      */
     public function updateCache()
     {
+        // blow away any possibly existing 'smart cache' files too:
+        $this->_destroy_UA_cachefiles();
+
         $ini_path = $this->cacheDir . $this->iniFilename;
         $cache_path = $this->cacheDir . $this->cacheFilename;
 
