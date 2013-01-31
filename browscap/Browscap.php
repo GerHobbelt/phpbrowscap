@@ -28,7 +28,7 @@
  * @package    Browscap
  * @author     Jonathan Stoppani <jonathan@stoppani.name>
  * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
- * @version    0.7
+ * @version    1.0
  * @license    http://www.opensource.org/licenses/MIT MIT License
  * @link       https://github.com/GaretJax/phpbrowscap/
  */
@@ -37,7 +37,7 @@ class Browscap
 	/**
 	 * Current version of the class.
 	 */
-	const VERSION           = '0.7';
+	const VERSION = '1.0';
 
 	/**
 	 * Different ways to access remote and local files.
@@ -180,17 +180,17 @@ class Browscap
 	 *
 	 * @var bool
 	 */
-	private $_cacheLoaded   = false;
+	protected $_cacheLoaded = false;
 
 	/**
 	 * Where to store the value of the included PHP cache file
 	 *
 	 * @var array
 	 */
-	private $_userAgents    = array();
-	private $_browsers      = array();
-	private $_patterns      = array();
-	private $_properties    = array();
+	protected $_userAgents = array();
+	protected $_browsers   = array();
+	protected $_patterns   = array();
+	protected $_properties = array();
 
 	/**
 	 * Constructor class, checks for the existence of (and loads) the cache and
@@ -211,7 +211,14 @@ class Browscap
 			);
 		}
 
+		$old_cache_dir = $cache_dir;
 		$cache_dir = realpath($cache_dir);
+
+		if (false === $cache_dir) {
+			throw new Browscap_Exception(
+				sprintf('The cache path %s is invalid. Are you sure that it exists and that you have permission to access it?', $old_cache_dir)
+			);
+		}
 
 		// Is the cache dir really the directory or is it directly the file?
 		if (substr($cache_dir, -4) === '.php') {
@@ -227,13 +234,13 @@ class Browscap
 	/**
 	 * Gets the information about the browser by User Agent
 	 *
-	 * @param string $user_agent   the user agent string
-	 * @param bool   $return_array whether return an array or an object
+	 * @param string $user_agent    the user agent string
+	 * @param bool   $return_array  whether return an array or an object
 	 *
 	 * @throws Browscap_Exception
 	 *
-	 * @return stdObject the object containing the browsers details. Array if
-	 *         $return_array is set to true.
+	 * @return stdObject  the object containing the browsers details. Array if
+	 *                    $return_array is set to true.
 	 */
 	public function getBrowser($user_agent = null, $return_array = false)
 	{
@@ -279,7 +286,7 @@ class Browscap
 		// Load the cache at the first request, when necessary
 		if (!$this->_cacheLoaded) {
 			$cache_file = $this->cacheDir . $this->cacheFilename;
-			$ini_file   = $this->cacheDir . $this->iniFilename;
+			$ini_file = $this->cacheDir . $this->iniFilename;
 
 			// Set the interval only if needed
 			if ($this->doAutoUpdate && file_exists($ini_file)) {
@@ -379,8 +386,8 @@ class Browscap
 		// blow away any possibly existing 'smart cache' files too:
 		$this->_destroy_UA_cachefiles();
 
-		$ini_path           = $this->cacheDir . $this->iniFilename;
-		$cache_path         = $this->cacheDir . $this->cacheFilename;
+		$ini_path = $this->cacheDir . $this->iniFilename;
+		$cache_path = $this->cacheDir . $this->cacheFilename;
 
 		// Choose the right url
 		if ($this->_getUpdateMethod() == self::UPDATE_LOCAL) {
@@ -391,7 +398,7 @@ class Browscap
 
 		$this->_getRemoteIniFile($url, $ini_path);
 
-		if (version_compare(PHP_VERSION, '5.3.0', '>=')){
+		if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
 			$browsers = parse_ini_file($ini_path, true, INI_SCANNER_RAW);
 		} else {
 			$browsers = parse_ini_file($ini_path, true);
@@ -399,7 +406,7 @@ class Browscap
 
 		array_shift($browsers);
 
-		$this->_properties  = array_keys($browsers['DefaultProperties']);
+		$this->_properties = array_keys($browsers['DefaultProperties']);
 		array_unshift(
 			$this->_properties,
 			'browser_name',
@@ -408,25 +415,25 @@ class Browscap
 			'Parent'
 		);
 
-		$this->_userAgents  = array_keys($browsers);
+		$this->_userAgents = array_keys($browsers);
 		usort(
 			$this->_userAgents,
 			create_function(self::ORDER_FUNC_ARGS, self::ORDER_FUNC_LOGIC)
 		);
 
-		$user_agents_keys   = array_flip($this->_userAgents);
-		$properties_keys    = array_flip($this->_properties);
+		$user_agents_keys = array_flip($this->_userAgents);
+		$properties_keys = array_flip($this->_properties);
 
-		$search             = array('\*', '\?');
-		$replace            = array('.*', '.');
+		$search = array('\*', '\?');
+		$replace = array('.*', '.');
 
 		foreach ($this->_userAgents as $user_agent) {
 			$pattern = preg_quote($user_agent, self::REGEX_DELIMITER);
-			$this->_patterns[]  = self::REGEX_DELIMITER
-								. '^'
-								. str_replace($search, $replace, $pattern)
-								. '$'
-								. self::REGEX_DELIMITER;
+			$this->_patterns[] = self::REGEX_DELIMITER
+			                   . '^'
+			                   . str_replace($search, $replace, $pattern)
+			                   . '$'
+			                   . self::REGEX_DELIMITER;
 
 			if (!empty($browsers[$user_agent]['Parent'])) {
 				$parent = $browsers[$user_agent]['Parent'];
@@ -508,14 +515,14 @@ class Browscap
 	 *
 	 * @return void
 	 */
-	private function _loadCache($cache_file)
+	protected function _loadCache($cache_file)
 	{
 		require $cache_file;
 
-		$this->_browsers    = $browsers;
-		$this->_userAgents  = $userAgents;
-		$this->_patterns    = $patterns;
-		$this->_properties  = $properties;
+		$this->_browsers = $browsers;
+		$this->_userAgents = $userAgents;
+		$this->_patterns = $patterns;
+		$this->_properties = $properties;
 
 		$this->_cacheLoaded = true;
 	}
@@ -525,14 +532,14 @@ class Browscap
 	 *
 	 * @return string the PHP string to save into the cache file
 	 */
-	private function _buildCache()
+	protected function _buildCache()
 	{
 		$cacheTpl = "<?php\n\$properties=%s;\n\$browsers=%s;\n\$userAgents=%s;\n\$patterns=%s;\n";
 
-		$propertiesArray    = $this->_array2string($this->_properties);
-		$patternsArray      = $this->_array2string($this->_patterns);
-		$userAgentsArray    = $this->_array2string($this->_userAgents);
-		$browsersArray      = $this->_array2string($this->_browsers);
+		$propertiesArray = $this->_array2string($this->_properties);
+		$patternsArray = $this->_array2string($this->_patterns);
+		$userAgentsArray = $this->_array2string($this->_userAgents);
+		$browsersArray = $this->_array2string($this->_browsers);
 
 		return sprintf(
 			$cacheTpl,
@@ -548,17 +555,17 @@ class Browscap
 	 * his syntax to the PHP ini parser
 	 *
 	 * @param string $url  the url of the remote server
-	 * @param string $path the path of the ini file to update
+	 * @param string $path  the path of the ini file to update
 	 *
 	 * @throws Browscap_Exception
 	 *
 	 * @return bool if the ini file was updated
 	 */
-	private function _getRemoteIniFile($url, $path)
+	protected function _getRemoteIniFile($url, $path)
 	{
 		// Check version
 		if (file_exists($path) && filesize($path)) {
-			$local_tmstp    = filemtime($path);
+			$local_tmstp = filemtime($path);
 
 			if ($this->_getUpdateMethod() == self::UPDATE_LOCAL) {
 				$remote_tmstp = $this->_getLocalMTime();
@@ -580,10 +587,10 @@ class Browscap
 		$browscap = explode("\n", $browscap);
 
 		$pattern = self::REGEX_DELIMITER
-				 . '('
-				 . self::VALUES_TO_QUOTE
-				 . ')="?([^"]*)"?$'
-				 . self::REGEX_DELIMITER;
+		         . '('
+		         . self::VALUES_TO_QUOTE
+		         . ')="?([^"]*)"?$'
+		         . self::REGEX_DELIMITER;
 
 
 		// Ok, lets read the file
@@ -608,7 +615,7 @@ class Browscap
 	 *
 	 * @return int the remote modification timestamp
 	 */
-	private function _getRemoteMTime()
+	protected function _getRemoteMTime()
 	{
 		$remote_datetime = $this->_getRemoteData($this->remoteVerUrl);
 		$remote_tmstp = strtotime($remote_datetime);
@@ -627,7 +634,7 @@ class Browscap
 	 *
 	 * @return int the local modification timestamp
 	 */
-	private function _getLocalMTime()
+	protected function _getLocalMTime()
 	{
 		if (!is_readable($this->localFile) || !is_file($this->localFile)) {
 			throw new Browscap_Exception('Local file is not readable');
@@ -646,28 +653,28 @@ class Browscap
 	 *
 	 * @return string the array parsed into a PHP string
 	 */
-	private function _array2string($array)
+	protected function _array2string($array)
 	{
 		$strings = array();
 
 		foreach ($array as $key => $value) {
 			if (is_int($key)) {
-				$key    = '';
+				$key = '';
 			} else if (ctype_digit((string) $key) || strpos($key, '.0')) {
-				$key    = intval($key) . '=>' ;
+				$key = intval($key) . '=>' ;
 			} else {
-				$key    = "'" . str_replace("'", "\'", $key) . "'=>" ;
+				$key = "'" . str_replace("'", "\'", $key) . "'=>" ;
 			}
 
 			if (is_array($value)) {
-				$value  = $this->_array2string($value);
+				$value = $this->_array2string($value);
 			} else if (ctype_digit((string) $value)) {
-				$value  = intval($value);
+				$value = intval($value);
 			} else {
-				$value  = "'" . str_replace("'", "\'", $value) . "'";
+				$value = "'" . str_replace("'", "\'", $value) . "'";
 			}
 
-			$strings[]  = $key . $value;
+			$strings[] = $key . $value;
 		}
 
 		return 'array(' . implode(',', $strings) . ')';
@@ -679,7 +686,7 @@ class Browscap
 	 *
 	 * @return string the name of function to use to retrieve the file
 	 */
-	private function _getUpdateMethod()
+	protected function _getUpdateMethod()
 	{
 		// Caches the result
 		if ($this->updateMethod === null) {
@@ -708,7 +715,7 @@ class Browscap
 	 *
 	 * @return string the retrieved data
 	 */
-	private function _getRemoteData($url)
+	protected function _getRemoteData($url)
 	{
 		ini_set('user_agent', $this->_getUserAgent());
 
@@ -731,7 +738,7 @@ class Browscap
 				} // else try with the next possibility (break omitted)
 
 			case self::UPDATE_FSOCKOPEN:
-				$remote_url     = parse_url($url);
+				$remote_url = parse_url($url);
 				$remote_handler = fsockopen($remote_url['host'], 80, $c, $e, $this->timeout);
 
 				if ($remote_handler) {
@@ -797,7 +804,7 @@ class Browscap
 	 *
 	 * @return string the formatted user agent
 	 */
-	private function _getUserAgent()
+	protected function _getUserAgent()
 	{
 		$ua = str_replace('%v', self::VERSION, $this->userAgent);
 		$ua = str_replace('%m', $this->_getUpdateMethod(), $ua);
@@ -922,10 +929,11 @@ class Browscap
  * Browscap.ini parsing class exception
  *
  * @package    Browscap
- * @author     Jonathan Stoppani <st.jonathan@gmail.com>
- * @copyright  Copyright (c) 2006-2008 Jonathan Stoppani
- * @license    http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public License
- * @link       http://garetjax.info/projects/browscap/
+ * @author     Jonathan Stoppani <jonathan@stoppani.name>
+ * @copyright  Copyright (c) 2006-2012 Jonathan Stoppani
+ * @version    1.0
+ * @license    http://www.opensource.org/licenses/MIT MIT License
+ * @link       https://github.com/GaretJax/phpbrowscap/
  */
 class Browscap_Exception extends Exception
 {}
