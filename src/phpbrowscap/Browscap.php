@@ -470,7 +470,7 @@ class Browscap
      */
     public function clearProxySettings($wrapper = null)
     {
-        $wrappers = isset($wrapper) ? array($wrappers) : array_keys($this->_streamContextOptions);
+        $wrappers = isset($wrapper) ? array($wrapper) : array_keys($this->_streamContextOptions);
 
         $affectedProtocols = array();
         $options = array('proxy', 'request_fulluri', 'header');
